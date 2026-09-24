@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>キャンパスのモヤモヤ辞典｜その言葉、名前があるよ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Old+Mincho:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --paper:#EEF1F3; --sheet:#F8F9FA; --ink:#1E2238; --sub:#5A6075; --rule:#C9CFD8;
+  --mark:#E6F25E; --mark-ink:#1E2238;
+  --a:#3E6FB0; --b:#2E8A6E; --c:#B0457A; --d:#B26F0E; --e:#6B4FB3;
+  --serif:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --sans:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#151929; --sheet:#1C2135; --ink:#E6E8EF; --sub:#A3A9BD; --rule:#343B55;
+    --mark:#C9D63F; --mark-ink:#151929;
+    --a:#7FA6E0; --b:#5FC2A2; --c:#E07FAE; --d:#E3A64B; --e:#A58CEB;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#151929; --sheet:#1C2135; --ink:#E6E8EF; --sub:#A3A9BD; --rule:#343B55;
+  --mark:#C9D63F; --mark-ink:#151929;
+  --a:#7FA6E0; --b:#5FC2A2; --c:#E07FAE; --d:#E3A64B; --e:#A58CEB;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.85;letter-spacing:.02em}
+img{max-width:100%}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--a);outline-offset:3px;border-radius:4px}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+
+/* hero: 辞書の見出し語 */
+.hero{padding:72px 0 56px;border-bottom:1px solid var(--rule)}
+.hero .src{font-size:13px;color:var(--sub);margin:0 0 28px}
+.headword{font-family:var(--serif);font-weight:900;font-size:clamp(56px,14vw,112px);line-height:1;margin:0;letter-spacing:.04em}
+.headword .dot{color:var(--rule);font-weight:500}
+.kana{font-family:var(--serif);font-size:clamp(18px,3.4vw,24px);color:var(--sub);margin:14px 0 26px}
+.senses{margin:0 0 36px;padding:0;list-style:none;counter-reset:s;font-family:var(--serif);font-size:clamp(17px,2.6vw,20px);line-height:1.9}
+.senses li{counter-increment:s;display:flex;gap:.6em}
+.senses li::before{content:counter(s,decimal);display:inline-grid;place-items:center;flex:0 0 1.5em;height:1.5em;margin-top:.2em;border:1px solid var(--ink);border-radius:50%;font-family:var(--sans);font-size:.72em}
+.senses mark{background:linear-gradient(transparent 55%,var(--mark) 55%);color:inherit;padding:0 .1em}
+.cta{display:inline-block;font:700 16px/1 var(--sans);background:var(--ink);color:var(--paper);text-decoration:none;padding:16px 26px;border-radius:999px}
+
+/* section titles */
+section{padding:56px 0}
+h2{font-family:var(--serif);font-weight:900;font-size:clamp(26px,4.6vw,34px);line-height:1.4;margin:0 0 12px}
+.lead{color:var(--sub);margin:0 0 28px}
+
+/* checklist */
+.checks{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+.checks li{border-bottom:1px solid var(--rule)}
+.checks label{display:grid;grid-template-columns:28px 1fr;gap:14px;padding:18px 4px;cursor:pointer;align-items:start}
+.checks input{appearance:none;-webkit-appearance:none;width:24px;height:24px;margin:4px 0 0;border:2px solid var(--sub);border-radius:6px;background:var(--sheet);display:grid;place-items:center;cursor:pointer}
+.checks input:checked{background:var(--ink);border-color:var(--ink)}
+.checks input:checked::after{content:"";width:6px;height:11px;border:solid var(--paper);border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.q{font-family:var(--serif);font-size:18px;font-weight:700;line-height:1.7}
+.q .say{background-image:linear-gradient(var(--mark),var(--mark));background-repeat:no-repeat;background-size:0% 46%;background-position:0 88%;transition:background-size .45s ease}
+.checks input:checked ~ div .say{background-size:100% 46%}
+.named{display:none;margin-top:8px;font-size:14px}
+.checks input:checked ~ div .named{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tag{display:inline-flex;align-items:center;gap:6px;font-weight:700;padding:3px 10px 3px 8px;border-radius:4px;border-left:4px solid var(--cat);background:var(--sheet);color:var(--ink);text-decoration:none}
+.tag small{font-weight:400;color:var(--sub)}
+
+.tally{position:sticky;bottom:0;z-index:5;margin-top:28px;padding:14px 0 calc(14px + env(safe-area-inset-bottom,0px));background:var(--paper);border-top:2px solid var(--ink);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tally p{margin:0;font-family:var(--serif);font-size:18px;font-weight:700}
+.tally b{font-size:30px;padding:0 .1em}
+.tally .reset{font:14px var(--sans);color:var(--sub);background:none;border:1px solid var(--rule);border-radius:999px;padding:8px 14px;cursor:pointer}
+.result{display:none;margin-top:24px;padding:22px;background:var(--sheet);border-radius:10px}
+.result.on{display:block}
+.result p{margin:0 0 12px}
+.result .tags{display:flex;flex-wrap:wrap;gap:8px}
+
+/* 辞典本文 */
+.index{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--paper);border-bottom:1px solid var(--rule);overflow-x:auto}
+.index ul{display:flex;gap:4px;margin:0 auto;padding:10px 20px;list-style:none;max-width:760px}
+.index a{display:block;white-space:nowrap;text-decoration:none;font-size:14px;font-weight:700;padding:6px 12px;border-radius:6px 6px 0 0;border-bottom:4px solid var(--cat)}
+.cat{padding-top:40px}
+.cat-head{display:flex;align-items:baseline;gap:14px;border-bottom:2px solid var(--cat);padding-bottom:8px;margin-bottom:8px}
+.cat-head h3{font-family:var(--serif);font-size:24px;margin:0;color:var(--cat)}
+.cat-head p{margin:0;color:var(--sub);font-size:14px}
+.entry{padding:26px 0;border-bottom:1px solid var(--rule)}
+.entry h4{font-family:var(--serif);font-weight:900;font-size:clamp(22px,3.8vw,26px);line-height:1.4;margin:0}
+.entry h4 span{background-image:linear-gradient(var(--mark),var(--mark));background-repeat:no-repeat;background-size:0% 40%;background-position:0 90%;transition:background-size .45s ease}
+.entry.hit h4 span{background-size:100% 40%;color:var(--ink)}
+.entry .en{font-size:14px;color:var(--sub);margin:2px 0 12px}
+.entry .hitnote{display:none;font-size:13px;font-weight:700;color:var(--cat);margin-left:8px}
+.entry.hit .hitnote{display:inline}
+.def{margin:0 0 12px}
+.ex{margin:0 0 12px;padding:0;list-style:none}
+.ex li{font-family:var(--serif);padding-left:2.4em;position:relative}
+.ex li::before{content:"用例";position:absolute;left:0;top:.3em;font:700 11px/1 var(--sans);color:var(--cat);border:1px solid var(--cat);border-radius:3px;padding:3px 3px}
+.hint{margin:0;padding:12px 16px;background:var(--sheet);border-radius:8px;font-size:15px}
+.hint::before{content:"ひとこと　";font-weight:700;color:var(--cat)}
+
+.care{margin:22px 0 0;font-size:14px;color:var(--sub)}
+.private{margin:-12px 0 24px;font-size:14px;font-weight:700;padding-left:12px;border-left:3px solid var(--mark)}
+.think,.refs{border-top:1px solid var(--rule)}
+.qs{margin:0;padding-left:1.6em}
+.qs li{margin-bottom:12px;font-family:var(--serif);font-size:17px}
+.refs ul{margin:0;padding-left:1.2em;font-size:14px;line-height:1.7}
+.refs li{margin-bottom:10px;overflow-wrap:anywhere}
+/* help */
+.help{border-top:1px solid var(--rule)}
+.help dl{margin:0}
+.help dt{font-family:var(--serif);font-weight:900;font-size:20px;margin-top:22px}
+.help dd{margin:4px 0 0}
+.note{font-size:14px;color:var(--sub);padding:40px 0 56px;border-top:1px solid var(--rule)}
+.note p{margin:0 0 8px}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important}html{scroll-behavior:auto}}
+@media (min-width:720px){html{scroll-behavior:smooth}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="src">キャンパスのモヤモヤ辞典　大学生版</p>
+    <h1 class="headword">もや<span class="dot">‐</span>もや</h1>
+    <p class="kana">【モヤモヤ】</p>
+    <ol class="senses">
+      <li>言われた一言がひっかかって、ずっと消えないこと。その場ではうまく言い返せなかったことが多い。</li>
+      <li>「気にしすぎかな」で片づけられがちだが、<mark>実はたいてい名前がついている</mark>。</li>
+    </ol>
+    <a class="cta" href="#check">言われたことをチェックする</a>
+    <p class="care">つらい経験を思い出しそうなときは、途中で閉じてかまいません。読むのをやめることも、自分を守る選択です。</p>
+  </div>
+</header>
+
+<main>
+  <section id="check">
+    <div class="wrap">
+      <h2>言われたこと、ありますか？</h2>
+      <p class="lead">家族、友だち、先生、バイト先、就活。これまでに言われて、ひっかかった言葉にチェックを入れてください。その言葉についている名前が出てきます。</p>
+      <p class="private">チェックはこの画面の中だけのもので、どこにも送信されません。先生にもほかの人にも見えません。</p>
+      <ul class="checks" id="checks"></ul>
+      <div class="tally" aria-live="polite">
+        <p>名前がついたモヤモヤ <b id="count">0</b>個</p>
+        <button class="reset" id="reset" type="button">チェックを外す</button>
+      </div>
+      <div class="result" id="result">
+        <p id="resultText"></p>
+        <div class="tags" id="resultTags"></div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="index" aria-label="分類">
+    <ul id="index"></ul>
+  </nav>
+
+  <section id="jiten" style="padding-top:0">
+    <div class="wrap" id="entries"></div>
+  </section>
+
+  <section class="help" id="help">
+    <div class="wrap">
+      <h2>モヤモヤしたら、できること</h2>
+      <p class="lead">名前がわかったら、次は自分を守る番です。全部やらなくて大丈夫。できそうなものから。</p>
+      <dl>
+        <dt>書き留めておく</dt>
+        <dd>いつ・誰に・何を言われたか。メモアプリに一行でも残しておくと、あとで自分の感覚を確かめたり、相談したりするときの手がかりになります。</dd>
+        <dt>誰かに話してみる</dt>
+        <dd>「こういうこと言われたんだけど、モヤモヤしてて」。それだけで、ひとりの問題ではなかったと気づけることがあります。</dd>
+        <dt>学内の窓口を知っておく</dt>
+        <dd>多くの大学には、学生相談室、ハラスメント相談窓口、キャリアセンター、保健管理センターがあります。解決を急がなくても、話を聞いてもらうところから始められます。</dd>
+        <dt>その場に居合わせたら</dt>
+        <dd>言われた本人でなくても、できることがあります。話題を変える、あとで「さっきの大丈夫だった？」と声をかける、「それ、〇〇さんが先に言ってたよね」と拾う。直接注意しなくても、ひとりにしないことが支えになります。</dd>
+        <dt>言い返せなくても、いい</dt>
+        <dd>その場で反論できなかったのは、あなたが弱いからではありません。立場の差や、突然のことだったからです。モヤモヤしたという感覚そのものが、大事なサインです。</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="think" id="think">
+    <div class="wrap">
+      <h2>考えてみよう</h2>
+      <p class="lead">ひとりで考えても、近くの人と話してもかまいません。自分の経験を話すかどうかは、自分で決めてください。</p>
+      <ol class="qs">
+        <li>名前を知る前と知ったあとで、そのモヤモヤの見え方は変わりましたか。</li>
+        <li>自分が「言う側」になっていたかもしれない言葉はありますか。そのとき、どんなつもりで言っていたでしょう。</li>
+        <li>好意的な言葉（ほめ言葉や心配）が、相手をモヤモヤさせるのはなぜでしょう。</li>
+        <li>この辞典に載っていないけれど、名前をつけたいモヤモヤはありますか。自分なりの名前と定義を考えてみてください。</li>
+        <li>ゼミやサークル、バイト先で、こうした言葉が出にくくなるためのルールや工夫を一つ提案してください。</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="refs" id="refs">
+    <div class="wrap">
+      <h2>もっと知りたい人へ</h2>
+      <p class="lead">この辞典で紹介した概念のもとになっている主な文献です。</p>
+      <ul>
+        <li>Sue, D. W., et al. (2007). Racial microaggressions in everyday life. <i>American Psychologist</i>, 62(4).（マイクロアグレッション）</li>
+        <li>Glick, P., &amp; Fiske, S. T. (1996). The Ambivalent Sexism Inventory. <i>Journal of Personality and Social Psychology</i>, 70(3).（好意的性差別）</li>
+        <li>Steele, C. M., &amp; Aronson, J. (1995). Stereotype threat and the intellectual test performance of African Americans. <i>Journal of Personality and Social Psychology</i>, 69(5).（ステレオタイプ脅威）</li>
+        <li>中西祐子（1998）『ジェンダー・トラック：青年期女性の進路形成と教育組織の社会学』東洋館出版社（ジェンダー・トラッキング）</li>
+        <li>Clance, P. R., &amp; Imes, S. A. (1978). The impostor phenomenon in high achieving women. <i>Psychotherapy: Theory, Research &amp; Practice</i>, 15(3).（インポスター現象）</li>
+        <li>伊藤公雄（1996）『男性学入門』作品社（男らしさの規範）</li>
+        <li>Solnit, R. (2014). <i>Men Explain Things to Me</i>. Haymarket Books.（マンスプレイニング）</li>
+        <li>Catalyst (2007). <i>The Double-Bind Dilemma for Women in Leadership</i>.（ダブルバインド）</li>
+        <li>Babcock, L., Recalde, M. P., Vesterlund, L., &amp; Weingart, L. (2017). Gender differences in accepting and receiving requests for tasks with low promotability. <i>American Economic Review</i>, 107(3).（評価されない役割の偏り）</li>
+        <li>ホックシールド, A. R.（2000）『管理される心：感情が商品になるとき』石川准・室伏亜希訳、世界思想社（感情労働）</li>
+        <li>Warner, M. (1991). Introduction: Fear of a queer planet. <i>Social Text</i>, 29.（異性愛規範）</li>
+        <li>厚生労働省（2020）「事業主が職場における優越的な関係を背景とした言動に起因する問題に関して雇用管理上講ずべき措置等についての指針」（アウティング）</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="note">
+    <div class="wrap">
+      <p>この辞典は、日常で出会いやすいモヤモヤを、ジェンダー論・社会学・心理学などで使われている概念と結びつけて紹介するものです。一つの言葉に複数の名前が当てはまることもあります。</p>
+      <p>言った人に悪意があったかどうかと、あなたがモヤモヤしたことは、別のことです。</p>
+    </div>
+  </div>
+</main>
+
+<script>
+const CATS = {
+  a:{name:"見えにくい差別", desc:"やさしさやほめ言葉の形をしているもの"},
+  b:{name:"期待と進路", desc:"「らしさ」が道を決めてしまうもの"},
+  c:{name:"声と発言", desc:"言ったことが届かなくなるもの"},
+  d:{name:"役割の押しつけ", desc:"いつのまにか引き受けているもの"},
+  e:{name:"力関係とハラスメント", desc:"立場の差があって断りにくいもの"}
+};
+const E = [
+ {id:"microaggression",c:"a",n:"マイクロアグレッション",en:"Microaggression",
+  q:["「女子なのに理系なんてすごいね」","「日本語上手だね」（日本で育った人に）"],
+  d:"悪意のない一言に含まれる、属性にもとづく小さな否定のメッセージ。ほめ言葉の形をとることも多く、「あなたは本来ここにいる人ではない」という前提がにじむ。一回は小さくても、繰り返されると心をすり減らす。",
+  h:"言った人に悪気がなかったことと、あなたが傷ついたことは、両立します。"},
+ {id:"benevolent",c:"a",n:"好意的性差別",en:"Benevolent sexism",
+  q:["「女の子なんだから、重いものは持たなくていいよ」","「女子はそんなに頑張らなくていいって」"],
+  d:"一見やさしく守ってくれる態度に見えて、「女性は弱い・能力が低い」という前提にもとづく性差別。敵意のある差別と表裏一体とされ、挑戦の機会を静かに奪う形で働くことがある。",
+  h:"そのやさしさを受け取るかどうかは、あなたが選んでいい。"},
+ {id:"paternalism",c:"a",n:"パターナリズム",en:"Paternalism",
+  q:["「女の子が一人で留学なんて危ないよ」","「あなたのためを思って言ってるの」"],
+  d:"「本人のため」を理由に、本人の意思を確かめないまま選択を制限したり、代わりに決めたりすること。親や先生など、近い関係の相手からのものほど断りにくい。",
+  h:"心配してくれることへの感謝と、決めるのは自分だということは、同時に伝えられます。"},
+ {id:"lookism",c:"a",n:"ルッキズム",en:"Lookism",
+  q:["「かわいいから得してるよね」","「もう少し痩せたらモテるのに」"],
+  d:"外見を基準に人を評価したり、扱いを変えたりすること。ほめ言葉であっても、「見た目で判断される」構造を強める点では同じ。",
+  h:"見た目へのコメントに、応える義務はありません。"},
+ {id:"stereotype-threat",c:"b",n:"ステレオタイプ脅威",en:"Stereotype threat",
+  q:["「女子って数字苦手でしょ？」","「男子は国語が弱いよね」"],
+  d:"自分の属する集団への否定的な思い込みを意識させられると、それを裏付けてしまう不安から、本来の力を出しにくくなる現象。社会心理学で研究されてきた。",
+  h:"うまくいかなかった日があっても、それは「能力」の証明ではありません。"},
+ {id:"gender-tracking",c:"b",n:"ジェンダー・トラッキング",en:"Gender tracking",
+  q:["「女の子は地元の大学で十分」","「大学院なんて行ったら結婚できないよ」"],
+  d:"性別によって、進学先・専攻・進路が見えない線路（トラック）のように振り分けられていくこと。本人の選択に見えて、周囲の期待や言葉が少しずつ方向を決めている。",
+  h:"「自分で選んだ」進路のどこに、誰の声があったか。振り返ってみるのもいいかもしれません。"},
+ {id:"impostor",c:"b",n:"インポスター現象",en:"Impostor phenomenon",
+  q:["「女子枠で入れてラッキーだったね」","「推薦組は楽でいいよね」"],
+  d:"実績があるのに「自分は実力で認められたわけではない」「いつか見抜かれる」と感じてしまう心理。個人の性格だけの問題ではなく、能力を割り引く周囲の言葉がそれを強めることがある。",
+  h:"どんな入り方でも、ここで学び続けているのはあなた自身の力です。"},
+ {id:"masculine-norms",c:"b",n:"男らしさの規範",en:"Masculine norms",
+  q:["「男なんだから泣くなよ」","「デートは男が奢って当然」"],
+  d:"「強くあれ・弱音を吐くな・稼げ」といった、男性に向けられる社会的な期待。助けを求めにくくし、本人を追い詰めることがある。ジェンダーの問題は、女性だけのものではない。",
+  h:"弱音を吐ける相手がいることも、強さの一部です。"},
+ {id:"tone-policing",c:"c",n:"トーンポリシング",en:"Tone policing",
+  q:["「そんな感情的な言い方じゃ伝わらないよ」","「もっと落ち着いて言ってくれたら聞くけど」"],
+  d:"主張の中身ではなく、話し方・態度・感情を問題にして、訴えを退けること。論点がすり替わり、声をあげた側が「悪い」ことにされやすい。",
+  h:"言い方の話と、中身の話は、切り分けて返していい。"},
+ {id:"gaslighting",c:"c",n:"ガスライティング",en:"Gaslighting",
+  q:["「そんなこと言ってないよ。記憶違いじゃない？」","「考えすぎ。被害妄想だって」"],
+  d:"相手の記憶や認識を否定し続け、「自分の感じ方がおかしいのでは」と思わせてしまう心理的な操作。一度きりの言い合いではなく、繰り返されるパターンで起こる。",
+  h:"その場でメモを残しておくと、自分の感覚を確かめる手がかりになります。"},
+ {id:"mansplaining",c:"c",n:"マンスプレイニング",en:"Mansplaining",
+  q:["「つまり、こういうことだよ」（あなたの得意分野なのに）"],
+  d:"相手（多くは女性）が十分に知っていることを、相手の知識を確かめないまま、上から説明すること。「この人は知らないはず」という前提が問題になる。",
+  h:"「そこは理解しています。そのうえで」と返すのも一つの手です。"},
+ {id:"hepeating",c:"c",n:"ヒーピーティング",en:"Hepeating",
+  q:["「〇〇くんのアイデア、いいね！」（あなたが先に言ったのに）"],
+  d:"女性が出した意見がスルーされ、同じ内容を男性が言い直すと評価される現象。he と repeating を組み合わせた造語。グループワークやゼミでも起こりやすい。",
+  h:"「それ、さっき〇〇さんが言った案だよね」と、仲間同士で拾い合うと効果的です。"},
+ {id:"double-bind",c:"c",n:"ダブルバインド",en:"Double bind",
+  q:["「もっと積極的に発言して」と言われて発言したら、「女子なのに気が強いね」"],
+  d:"どちらを選んでも否定される、矛盾したメッセージの板挟み。女性のリーダーシップ研究では「感じがいいと有能に見られず、有能だと感じが悪く見られる」形でよく知られている。",
+  h:"どちらを選んでも責められるなら、問題はあなたの選び方ではなく、構造の側にあります。"},
+ {id:"npt",c:"d",n:"評価されない役割の偏り",en:"Non-promotable tasks",
+  q:["「議事録は女子がやってよ」","「気がきくから、飲み会の幹事お願い」"],
+  d:"必要だけれど評価や成果につながりにくい役割が、特定の人（多くは女性）に偏って割り振られること。発表や代表など、目立つ役から遠ざかる原因にもなる。",
+  h:"役割はローテーションやくじで決めよう、と提案することができます。"},
+ {id:"emotional-labor",c:"d",n:"感情労働",en:"Emotional labor",
+  q:["「女の子なんだから、もっと笑顔で」（バイト先で）"],
+  d:"仕事の一部として、自分の感情を管理し、求められる表情や態度を演じること。社会学者A・R・ホックシールドが名づけた。性別によって求められる度合いが偏りやすい。",
+  h:"疲れを感じるのは当然です。それも「労働」だからです。"},
+ {id:"heteronormativity",c:"d",n:"異性愛規範",en:"Heteronormativity",
+  q:["「彼氏いるの？」","「好きな女の子のタイプは？」"],
+  d:"「誰もが異性を好きになる」「恋愛するのが当たり前」ということを前提にした考え方や言葉づかい。当てはまらない人を、いないことにしてしまう。",
+  h:"答えたくない質問には、答えなくていい。"},
+ {id:"shukatsu",c:"e",n:"就活ハラスメント",en:"Harassment in job hunting",
+  q:["「彼氏いるの？ 結婚しても働くつもり？」（面接やOB・OG訪問で）"],
+  d:"就職活動中の学生に対する、性的な言動や、選考と関係のないプライベートへの踏み込み。立場の差が大きく、学生は断りにくい。近年、企業に防止対策を求める法整備も進んでいる。",
+  h:"日時・相手・内容を記録して、大学のキャリアセンターに相談できます。"},
+ {id:"aka-hara",c:"e",n:"アカデミック・ハラスメント",en:"Academic harassment",
+  q:["「そんな研究、意味あるの？」","「女性は研究者に向いてないよ」（教員から）"],
+  d:"大学などで、教員と学生の力関係を背景に行われる嫌がらせや不当な扱い。人格を否定する発言、指導の放棄、成績や推薦書を盾にした圧力などを含む。",
+  h:"多くの大学にハラスメント相談窓口があります。まず話を聞いてもらうだけでも大丈夫です。"},
+ {id:"victim-blaming",c:"e",n:"被害者非難",en:"Victim blaming",
+  q:["「そんな服で夜道を歩くからだよ」","「隙があったんじゃない？」"],
+  d:"被害にあった人に、その責任の一部を負わせるような言動。加害の責任をあいまいにし、被害を打ち明けにくくする。",
+  h:"責任は、加害した側にあります。"},
+ {id:"outing",c:"e",n:"アウティング",en:"Outing",
+  q:["「あなたのこと、サークルのみんなにも話しといたから」"],
+  d:"本人の同意なく、性的指向や性自認などの秘密を他の人に暴露すること。深刻な結果を招くことがあり、自治体の条例や職場のハラスメント防止指針でも、防止すべき行為とされている。",
+  h:"自分のことを、いつ・誰に話すかは、あなたが決めていい。"}
+];
+
+const $ = s => document.querySelector(s);
+const checks = $("#checks"), entriesEl = $("#entries"), indexEl = $("#index");
+const esc = s => s.replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+
+// チェックリスト（各項目の最初の用例を使い、分類がわからないよう並べ替え）
+const order = [0,9,4,14,2,12,7,16,5,10,3,18,8,13,15,1,11,6,17,19];
+order.forEach(i => {
+  const e = E[i];
+  const li = document.createElement("li");
+  li.innerHTML = `<label>
+    <input type="checkbox" value="${e.id}">
+    <div>
+      <div class="q"><span class="say">${esc(e.q[0])}</span></div>
+      <div class="named"><a class="tag" style="--cat:var(--${e.c})" href="#${e.id}">${esc(e.n)} <small>${esc(CATS[e.c].name)}</small></a></div>
+    </div></label>`;
+  checks.appendChild(li);
+});
+
+// 目次と本文
+Object.entries(CATS).forEach(([k,cat]) => {
+  indexEl.insertAdjacentHTML("beforeend", `<li><a href="#cat-${k}" style="--cat:var(--${k})">${esc(cat.name)}</a></li>`);
+  const list = E.filter(e => e.c === k).map(e => `
+    <article class="entry" id="${e.id}" style="--cat:var(--${k})">
+      <h4><span>${esc(e.n)}</span><em class="hitnote" style="font-style:normal">言われたことがある</em></h4>
+      <p class="en">${esc(e.en)}</p>
+      <p class="def">${esc(e.d)}</p>
+      <ul class="ex">${e.q.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+      <p class="hint">${esc(e.h)}</p>
+    </article>`).join("");
+  entriesEl.insertAdjacentHTML("beforeend", `
+    <div class="cat" id="cat-${k}" style="--cat:var(--${k})">
+      <div class="cat-head"><h3>${esc(cat.name)}</h3><p>${esc(cat.desc)}</p></div>
+      ${list}
+    </div>`);
+});
+
+function update(){
+  const on = [...checks.querySelectorAll("input:checked")].map(i => i.value);
+  $("#count").textContent = on.length;
+  E.forEach(e => document.getElementById(e.id).classList.toggle("hit", on.includes(e.id)));
+  const r = $("#result");
+  if(!on.length){ r.classList.remove("on"); return; }
+  r.classList.add("on");
+  const cats = new Set(E.filter(e => on.includes(e.id)).map(e => e.c));
+  $("#resultText").textContent = on.length === 1
+    ? "そのモヤモヤには名前がありました。下の辞典で、意味とひとことを読んでみてください。"
+    : `${on.length}個のモヤモヤに名前がありました（${cats.size}つの分類にまたがっています）。どれも「気にしすぎ」ではなく、研究され、名前がつけられてきたものです。`;
+  $("#resultTags").innerHTML = E.filter(e => on.includes(e.id))
+    .map(e => `<a class="tag" style="--cat:var(--${e.c})" href="#${e.id}">${esc(e.n)}</a>`).join("");
+}
+checks.addEventListener("change", update);
+$("#reset").addEventListener("click", () => { checks.querySelectorAll("input").forEach(i => i.checked = false); update(); });
+</script>
+</body>
+</html>
